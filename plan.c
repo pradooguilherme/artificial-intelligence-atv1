@@ -83,12 +83,10 @@ void cleanEnviromentWithSensor(cleaner *C, enviroment E)
 
         if (C->battery >= distanceToCharge + distanceToDirty)
         {
-            if (goTarget(C, E, dirty_pos))
-            {
-                clean(C);
-                printSimulation(*C, E);
-                dirty_pos = vaccumSensor(*C, E);
-            }
+            goTarget(C, E, dirty_pos);
+            clean(C);
+            printSimulation(*C, E);
+            dirty_pos = vaccumSensor(*C, E);
         }
         else
         {
