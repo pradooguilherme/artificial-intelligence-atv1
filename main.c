@@ -29,6 +29,7 @@ int main(){
     cleaner C = newCleaner(E);
 
     //Limpeza do ambiente com sensor
+    printSimulation(C,E);
     cleanEnviromentWithSensor(&C, E);
     printf("Número total de ações executadas pelo agente: %d \n",C.numActions);
 
