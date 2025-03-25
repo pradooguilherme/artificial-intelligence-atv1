@@ -67,34 +67,50 @@ void cleanEnviromentWithSensor(cleaner *C, enviroment E)
          localizada via um sensor;
      */
 
+    // Começamos indentificando a posição suja mais perta;
     place *dirty_pos = vaccumSensor(*C, E);
 
+    // Enquanto tivemos uma posição suja, o robô continua sua rotina de limpeza;
     while (dirty_pos != NULL)
     {
+        // Verificamos se a bateria está em estado crítico;
         if (C->battery < E.h + E.w)
         {
+            // Se sim, recarregamos nosso robô;
             charge(C, E);
+            // Após isso, ao invés de voltar para a posição antiga, procuramos a sujeira mais perta da base de carregamento;
             dirty_pos = vaccumSensor(*C, E);
             printSimulation(*C, E);
         }
 
+        // Calculamos a distância do robô para a sujeira;
         int distanceToDirty = getDistanceBetweenTwoPoints(C->whereCleaner, dirty_pos);
+        // Calculamos a distância da sujeira para o carregador;
         int distanceToCharge = getDistanceBetweenTwoPoints(dirty_pos, C->whereCharger);
+
+        // Calculado isso, podemos saber se vai ser possível ir até a sujeira mais perta e sobrar energia para voltarmos carregar;
+        // Aqui verificamos exatamente isso;
 
         if (C->battery >= distanceToCharge + distanceToDirty)
         {
+            // Se sim, vamos até a sujeira;
             goTarget(C, E, dirty_pos);
+            // Limpamos;
             clean(C);
             printSimulation(*C, E);
+            // Localizamos a próxima sujeira;
             dirty_pos = vaccumSensor(*C, E);
         }
         else
         {
+            // Se não, temos que carregar antes de voltarmos para a nosso rotina;
             charge(C, E);
+            // Localizamos a sujeira mais próxima novamente;
             dirty_pos = vaccumSensor(*C, E);
         }
     }
 
+    // Como fim da rotina, voltamos para a base de carregamento;
     goTarget(C, E, C->whereCharger);
     printSimulation(*C, E);
     printf("Missão cumprida! A sala foi limpa.\n");

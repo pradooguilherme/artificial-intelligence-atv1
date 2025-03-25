@@ -220,6 +220,9 @@ void printSimulation(cleaner C, enviroment E)
     sleep(1);
 }
 
+// Função "isDirty"
+// Verifica se o grid está sujo dado o ambiente, a linha e a coluna;
+
 bool isDirty(enviroment E, int row, int col)
 {
     if (E.grid[row][col].dirt)
@@ -230,34 +233,55 @@ bool isDirty(enviroment E, int row, int col)
     return false;
 }
 
+// Função isAPosition
+// Verifica se a posição é válida dado o robô, ambiente, a linha e a coluna;
+
 bool isAPosition(cleaner C, enviroment E, int row, int col)
 {
     if (row >= 0 && row <= E.h - 1 && col >= 0 && col <= E.w - 1)
     {
-        if (C.whereCharger != getPlace(E, row, col))
-        {
-            return true;
-        }
+        return true;
     }
 
     return false;
 }
+
+// Função getDistanceBetweenTwoPoints
+// Retorna a distância entre dois 'places', que é a soma da diferença das coordenadas de cada eixo;
 
 int getDistanceBetweenTwoPoints(place* a, place* b){
 
     return abs(a->col - b-> col) + abs(a->row - b->row);
 }
 
+// Função vacuumSensor
+// Retorna o 'place' sujo mais perto do robô;
+// O retorno é um ponteiro para um 'place';
+
 place *vaccumSensor(cleaner C, enviroment E)
 {
-    // Essa função é passível de otimização;
-    
+    // Aqui pegamos as coordenadas do nosso robô;
     int row = C.whereCleaner->row;
     int col = C.whereCleaner->col;
 
+    // Nosso primeiro loop representa a distância para chegar em um 'place';
+    // Isso quer dizer que começamos analisando os quadrados a um movimento de distância, dois e assim, por diante;
+
     for(int mov = 1; mov <= E.h + E.w - 2; mov++){
+
+        // Nosso 'j' vai ser o número de movimentos na horizontal;
             for(int j = 0; j <= mov; j++){
+
+                // Nosso 'i' vai ser o número de movimentos na vertical;
+                // O 'i' é sempre calculado para que o número de movimentos 'mov' seja sempre igual a 'i+j';
+                // Então, para posições a dois movimentos de distância, temos algumas variações de movimento;
+                // Ele pode ser, dois movimentos pra cima, dois movimentos pra baixo e etc;
+
                 int i = mov - j;
+
+                // Essa cadeia de if's verifica se o ponto gerado pelos loop's é uma posição válida e se ela está suja;
+                // Se sim, essa posição é retornada, se não outras posições são testadas;
+
                 if(isAPosition(C,E, row + i, col + j) && isDirty(E, row + i, col + j)){
                     return getPlace(E, row + i, col + j);
                 }
@@ -272,6 +296,10 @@ place *vaccumSensor(cleaner C, enviroment E)
                 }
             }    
     }
+
+    // Se nenhum lugar é retornado quer dizer que nosso ambiente está limpo;
+    // Retornamos 'NULL' ao fim;
+
     printf("Todos os quadrados estão limpos.\n");
     return NULL;
 }
